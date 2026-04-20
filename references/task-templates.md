@@ -89,7 +89,7 @@ client.close()
 If the task is standard, prefer the bundled CLI instead of writing a new script:
 
 ```bash
-/Users/robin/miniconda3/bin/python scripts/treehole_cli.py search "数学期末" --pages 5
-/Users/robin/miniconda3/bin/python scripts/treehole_cli.py post 8164148 --all-comments
-/Users/robin/miniconda3/bin/python scripts/treehole_cli.py export-markdown treehole_job.md --tag-id 3 --title 求职经历
+python3 scripts/treehole_cli.py search "数学期末" --pages 5
+python3 scripts/treehole_cli.py post 8164148 --all-comments
+python3 scripts/treehole_cli.py export-markdown treehole_job.md --tag-id 3 --title 求职经历
 ```

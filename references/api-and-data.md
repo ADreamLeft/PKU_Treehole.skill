@@ -11,14 +11,22 @@
 
 ## Environment
 
-Use the Conda `base` Python at `/Users/robin/miniconda3/bin/python` and ensure these packages are installed there:
+Use `python3` (or your active virtual environment interpreter) and ensure these packages are installed in that environment:
 
 ```bash
-/Users/robin/miniconda3/bin/python -m pip install requests playwright
-/Users/robin/miniconda3/bin/playwright install chromium
+python3 -m pip install requests playwright
+python3 -m playwright install chromium
 ```
 
 Start Chrome with remote debugging enabled, then log into Treehole in that browser profile.
+
+Recommended env vars for this skill runtime:
+
+```bash
+export TREEHOLE_DEBUG_HOST=localhost
+export TREEHOLE_DEBUG_PORT=9222
+export TREEHOLE_URL=https://treehole.pku.edu.cn/web/
+```
 
 macOS:
 
@@ -40,7 +48,7 @@ Use Chrome DevTools Protocol to attach to the already logged-in local Chrome ins
 
 Preferred order:
 
-1. Attach to Chrome on port `9222`.
+1. Attach to Chrome on the configured debug port (default `9222`).
 2. Open a fresh same-session Treehole page.
 3. Reuse the page's own `headerTop.search()` and `index.list` data.
 4. Read replies from the in-page `reply` components.
@@ -119,11 +127,11 @@ Known tag IDs:
 
 ### Cannot connect to the debug port
 
-Chrome is not running with `--remote-debugging-port=9222`, or it is using a different port.
+Chrome is not running with `--remote-debugging-port=<port>`, or it is using a different port than `TREEHOLE_DEBUG_PORT`.
 
 ### The page opens but the skill says Treehole is not logged in
 
-Reopen `https://treehole.pku.edu.cn/web/` in the debug Chrome instance and confirm the feed is visible before running the skill.
+Reopen the URL configured by `TREEHOLE_URL` in the debug Chrome instance and confirm the feed is visible before running the skill.
 
 ### Search results look unrelated
 

@@ -1,4 +1,4 @@
-#!/Users/robin/miniconda3/bin/python
+#!/usr/bin/env python3
 """CLI for common PKU Treehole read-only workflows."""
 
 from __future__ import annotations

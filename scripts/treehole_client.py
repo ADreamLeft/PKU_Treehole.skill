@@ -1,4 +1,4 @@
-#!/Users/robin/miniconda3/bin/python
+#!/usr/bin/env python3
 """PKU Treehole reader backed by a logged-in Chrome debug page."""
 
 from __future__ import annotations
@@ -12,8 +12,22 @@ from typing import Any, Dict, Iterable, Iterator, List, Optional
 
 import requests
 
-DEBUG_ENDPOINT = "http://localhost:9222/json/version"
-TREEHOLE_URL = "https://treehole.pku.edu.cn/web/"
+def _env_int(name: str, default: int) -> int:
+    raw_value = str(os.getenv(name, "")).strip()
+    if not raw_value:
+        return default
+    try:
+        return int(raw_value)
+    except ValueError:
+        return default
+
+
+DEBUG_HOST = str(os.getenv("TREEHOLE_DEBUG_HOST", "localhost")).strip() or "localhost"
+DEBUG_PORT = _env_int("TREEHOLE_DEBUG_PORT", 9222)
+DEBUG_ENDPOINT = str(
+    os.getenv("TREEHOLE_DEBUG_ENDPOINT", "http://{0}:{1}/json/version".format(DEBUG_HOST, DEBUG_PORT))
+).strip()
+TREEHOLE_URL = str(os.getenv("TREEHOLE_URL", "https://treehole.pku.edu.cn/web/")).strip()
 RATE_LIMIT_PER_MIN = 18
 MIN_INTERVAL_S = 60.0 / RATE_LIMIT_PER_MIN
 JITTER_S = 0.8
@@ -106,8 +120,9 @@ def _read_debug_ws_url() -> str:
         response.raise_for_status()
     except requests.RequestException as exc:
         raise RuntimeError(
-            "Could not reach Chrome debug port 9222. Open Chrome with "
-            "--remote-debugging-port=9222 and keep Treehole logged in."
+            "Could not reach Chrome debug endpoint {0}. Open Chrome with "
+            "--remote-debugging-port={1} and keep Treehole logged in."
+            .format(DEBUG_ENDPOINT, DEBUG_PORT)
         ) from exc
 
     try:
@@ -214,7 +229,8 @@ class TreeholeClient:
             from playwright.sync_api import sync_playwright
         except ImportError as exc:
             raise RuntimeError(
-                "Playwright is required. Use /Users/robin/miniconda3/bin/python and install playwright there."
+                "Playwright is required. Install it in your active Python environment "
+                "(for example: python3 -m pip install playwright)."
             ) from exc
 
         ws_url = _read_debug_ws_url()
@@ -274,7 +290,8 @@ class TreeholeClient:
             raise RuntimeError("Treehole page did not finish loading in the debug Chrome instance.")
         if "北大树洞" not in str(state.get("text", "")):
             raise RuntimeError(
-                "The debug Chrome instance is not on a logged-in Treehole page. Open https://treehole.pku.edu.cn/web/ first."
+                "The debug Chrome instance is not on a logged-in Treehole page. Open {0} first."
+                .format(TREEHOLE_URL)
             )
 
     def _wait_for_posts(
@@ -901,7 +918,8 @@ class TreeholeClient:
 
 def extract_cookies_from_chrome() -> Dict[str, str]:
     raise RuntimeError(
-        "Cookie extraction has been removed. Keep Treehole logged in on Chrome debug port 9222 and use build_client_from_chrome()."
+        "Cookie extraction has been removed. Keep Treehole logged in on Chrome debug port {0} and use build_client_from_chrome()."
+        .format(DEBUG_PORT)
     )
 
 
